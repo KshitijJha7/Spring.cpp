@@ -1,5 +1,5 @@
 #pragma once
-#include "Setter.hpp"
+#include "setter.hpp"
 #include <typeinfo>
 
 template<typename T, typename Arg>
