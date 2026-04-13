@@ -40,6 +40,15 @@ inline static int _auto_register_default_constructor = []()->int{\
     return 0;\
 }()
 
+#define QLFRLIST(...) std::vector<std::string>{__VA_ARGS__}
+
+#define AUTOWIRED_CONSTRUCTOR_QLFR(qualifiers,...)\
+inline static int _auto_register_ctor_##__COUNTER__ = []()->int{    \
+    Constructor * ctor = new ConstructorMetadata<Bean::bean_type_name,__VA_ARGS__>(qualifiers);   \
+    Bean::addConstructor(ctor); \
+    return 0;   \
+}()
+
 #define AUTOWIRED_SETTER_QLFR(setter_field_type,setter_field_name,qualifier)\
     void set_##setter_field_name(setter_field_type setter_field_name){\
         this->setter_field_name = setter_field_name;\

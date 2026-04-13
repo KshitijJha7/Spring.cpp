@@ -1,37 +1,39 @@
 #include "include/di-core.hpp"
 #include <vector>
 #include <iostream>
+#include <string>
 
-class Test:public Bean<Test>{
+class Test : public Bean<Test> {
     private:
         BEAN;
     public:
-        int* a;
-        int* b;
-        DEFAULT_CONSTRUCTOR;
-        AUTOWIRED_SETTER(int*,a);
-        AUTOWIRED_SETTER_QLFR(int*,b,"b_qualifier");
-        Test(){
-            a = new int(101);
-            b = new int(202);
-        }  
+        int a;
+        std::string name;
+        AUTOWIRED_CONSTRUCTOR_QLFR(QLFRLIST("a_qualifier", "name_qualifier"), int, std::string);
+        Test(int a, std::string name) : a(a), name(name) {}
+        AUTOWIRED_SETTER_QLFR(int, a, "a_qualifier");
         
 };
-  
- 
+
+
 int main(){
+    int val_int = 42;
+    std::string val_str = "hello";
+
+    Container::getInstance().addTypeInjectable(typeid(int), "a_qualifier");
+    Container::getInstance().getInjectable(typeid(int), "a_qualifier")->instance = &val_int;
+
+    Container::getInstance().addTypeInjectable(typeid(std::string), "name_qualifier");
+    Container::getInstance().getInjectable(typeid(std::string), "name_qualifier")->instance = &val_str;
+
     Constructor* ctor = Container::getInstance().getInjectable(typeid(Test))->getCtorList()[0];
-    int * test = new int(12);
-    Container::getInstance().addTypeInjectable(typeid(int*));
-    Container::getInstance().getInjectable(typeid(int*))->instance=&test;
-    Container::getInstance().addTypeInjectable(typeid(int*),"b_qualifier");
-    Container::getInstance().getInjectable(typeid(int*),"b_qualifier")->instance=&test;
-    Test * t1 = static_cast<Test*>(ctor->create());
-    std::cout<<"Size of setter metadata vector:"<<Container::getInstance().getInjectable(typeid(Test))->getSettersList().size()<<"\n";
+    Test* t1 = static_cast<Test*>(ctor->create());
+    std::cout << "a: " << t1->a << "\n";       // expected: 42
+    std::cout << "name: " << t1->name << "\n"; // expected: hello
+    int new_val = 99;
+    Container::getInstance().getInjectable(typeid(int), "a_qualifier")->instance = &new_val;
     Setter* setr = Container::getInstance().getInjectable(typeid(Test))->getSettersList()[0];
-    Setter* setr2 = Container::getInstance().getInjectable(typeid(Test))->getSettersList()[1];
-    setr->call(t1,Container::getInstance().getInjectable(typeid(int*))->instance);
-    setr2->call(t1,Container::getInstance().getInjectable(typeid(int*),"b_qualifier")->instance);
-    std::cout<<"Value of a:"<<*(t1->a)<<"\n";
-    std::cout<<"Value of b:"<<*(t1->b)<<"\n";
+    DIKey key = setr->getDIKey();
+    setr->call(t1, Container::getInstance().getInjectable(key.type, key.qualifier)->instance);
+    std::cout << "a after setter: " << t1->a << "\n"; // expected: 99
 }
