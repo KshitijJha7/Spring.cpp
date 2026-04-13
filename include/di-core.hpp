@@ -6,13 +6,13 @@
 
 #define BEAN                                            \
     inline static int _auto_register_T = []() -> int {\
-        Bean::registerBeanByType();                     \
+        Bean::registerBean();                     \
         return 0;                                       \
     }()
     
-#define BEAN_WITH_QUALIFIER(str)                        \
+#define BEAN_QLFR(str)                        \
     inline static int _auto_register_Q = []() -> int {\
-        Bean::registerBeanByQuaifier(str);              \
+        Bean::registerBean(str);              \
         return 0;                                       \
     }()
 
@@ -40,4 +40,13 @@ inline static int _auto_register_default_constructor = []()->int{\
     return 0;\
 }()
 
+#define AUTOWIRED_SETTER_QLFR(setter_field_type,setter_field_name,qualifier)\
+    void set_##setter_field_name(setter_field_type setter_field_name){\
+        this->setter_field_name = setter_field_name;\
+    }\
+    inline static int _auto_register_setter_##setter_field_name = []()->int{\
+         Setter * setr = new SetterMetadata<Bean::bean_type_name,setter_field_type>(&Bean::bean_type_name::set_##setter_field_name, qualifier);\
+         Bean::addSetter(setr);\
+         return 0;\
+    }()
 // end of file

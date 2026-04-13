@@ -1,28 +1,26 @@
 #pragma once
 #include <typeindex>
+#include <string>
 #include "container.hpp"
-#include <iostream>
 
 template <typename T>
-class Bean{
-    protected:
+class Bean {
+protected:
     using bean_type_name = T;
-    static void registerBeanByType(){
-        Container::getInstance().addTypeInjectable(typeid(T));
+
+    static void registerBean(const std::string& qualifier = "") {
+        Container::getInstance().addTypeInjectable(typeid(T), qualifier);
     }
-    static void registerBeanByQualifier(std::string qlfr){
-        Container::getInstance().addQualifierInjectable(qlfr);
+
+    static void addConstructor(Constructor* ctor, const std::string& qualifier = "") {
+        Container::getInstance().addConstructor(typeid(T), ctor, qualifier);
     }
-    static void addSetter(Setter * str){
-        Container::getInstance().addSetter(typeid(T),str);
+
+    static void addSetter(Setter* setter, const std::string& qualifier = "") {
+        Container::getInstance().addSetter(typeid(T), setter, qualifier);
     }
-    static void addConstructor(Constructor * ctor){
-        Container::getInstance().addConstructor(typeid(T),ctor);
-    }
-    static void addSetter(std::string str,Setter * ctor){
-        
-    }
-    static std::type_index getBeanTypeIdx(){
+
+    static std::type_index getBeanTypeIdx() {
         return typeid(T);
     }
 };

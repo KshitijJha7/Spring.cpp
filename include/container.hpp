@@ -2,74 +2,78 @@
 #include "injectable.hpp"
 #include <typeindex>
 #include <unordered_map>
+#include <string>
 #include <stdexcept>
+#include "di_key.hpp"
 
-class Container{
-    public:
-        static Container& getInstance(){
-            static Container instance;
-            return instance;
-        }
-        void addTypeInjectable(std::type_index type){
-            if(type_registry.find(type)==type_registry.end()){
-                type_registry.insert({type,new Injectable()});
-            }else{
-                throw std::runtime_error(std::string("Duplicate injetable for type:")+type.name());
-            }
-        }
-        void addQualifierInjectable(std::string qlfr){
-            if(qualifier_registry.find(qlfr)==qualifier_registry.end()){
-                qualifier_registry.insert({qlfr,new Injectable()});
-            }else{
-                throw std::runtime_error(std::string("Duplicate injectable for qualifier string:"+qlfr));
-            }
-        }
-        
-        void addConstructor(std::type_index type,Constructor* ctor){
-            if(type_registry.find(type)!=type_registry.end()){
-                type_registry[type]->add_constructor_metadata(ctor);
-            }else{
-                throw std::runtime_error(std::string("Injectable for type:"+std::string(type.name())+"doesn't exist"));
-            }
-        }
+class Container {
+public:
+    static Container& getInstance() {
+        static Container instance;
+        return instance;
+    }
 
-        void addSetter(std::type_index type,Setter* setter){
-            if(type_registry.find(type)!=type_registry.end()){
-                type_registry[type]->add_setter_metadata(setter);
-            }else{
-                throw std::runtime_error(std::string("Injectable for type:"+std::string(type.name())+"doesn't exist"));
-            }
+    void addTypeInjectable(std::type_index type, std::string qualifier = "") {
+        DIKey key{type, qualifier};
+        if (type_registry.find(key) == type_registry.end()) {
+            type_registry[key] = new Injectable();
+        } else {
+            throw std::runtime_error("Duplicate injectable for type: " + std::string(type.name()) + " qualifier: " + qualifier);
         }
+    }
 
-        void addConstructor(std::string qlfr,Constructor* ctor){
-            if(qualifier_registry.find(qlfr)!=qualifier_registry.end()){
-                qualifier_registry[qlfr]->add_constructor_metadata(ctor);
-            }else{
-                throw std::runtime_error(std::string("Injectable for qualifier:"+qlfr+"doesn't exist"));
-            }
+    void addConstructor(std::type_index type, Constructor* ctor, std::string qualifier = "") {
+        DIKey key{type, qualifier};
+        auto it = type_registry.find(key);
+        if (it != type_registry.end()) {
+            it->second->add_constructor_metadata(ctor);
+        } else {
+            throw std::runtime_error("Injectable not found for type: " + std::string(type.name()) + " qualifier: " + qualifier);
         }
+    }
 
-        void addSetter(std::string qlfr,Setter* setter){
-            if(qualifier_registry.find(qlfr)!=qualifier_registry.end()){
-                qualifier_registry[qlfr]->add_setter_metadata(setter);
-            }else{
-                throw std::runtime_error(std::string("Injectable for type:"+qlfr+"doesn't exist"));
-            }
+    void addSetter(std::type_index type, Setter* setter, std::string qualifier = "") {
+        DIKey key{type, qualifier};
+        auto it = type_registry.find(key);
+        if (it != type_registry.end()) {
+            it->second->add_setter_metadata(setter);
+        } else {
+            throw std::runtime_error("Injectable not found for type: " + std::string(type.name()) + " qualifier: " + qualifier);
         }
-        Injectable* getInjectable(std::type_index a){
-            if(type_registry.find(a)!=type_registry.end()){
-                return type_registry[a];
-            }else{
-                return nullptr;
-            }
-        }
-        bool checkIfExists(std::type_index a){
-            return (type_registry.find(a)!=type_registry.end());
-        }
-    private:
-        std::unordered_map<std::type_index,Injectable*> type_registry;
-        std::unordered_map<std::string,Injectable*> qualifier_registry;
-        Container(){
+    }
 
+    Injectable* getInjectable(std::type_index type, std::string qualifier = "") {
+        DIKey key{type, qualifier};
+        auto it = type_registry.find(key);
+        if (it != type_registry.end()) {
+            return it->second;
         }
+        if (!qualifier.empty()) {
+            DIKey defaultKey{type, ""};
+            it = type_registry.find(defaultKey);
+            if (it != type_registry.end()) {
+                return it->second;
+            }
+        }
+        return nullptr;
+    }
+
+    bool checkIfExists(std::type_index type, std::string qualifier = "") {
+        DIKey key{type, qualifier};
+        if (type_registry.find(key) != type_registry.end()) {
+            return true;
+        }
+        if (!qualifier.empty()) {
+            DIKey defaultKey{type, ""};
+            return type_registry.find(defaultKey) != type_registry.end();
+        }
+        return false;
+    }
+
+private:
+    std::unordered_map<DIKey, Injectable*, DIKeyHash> type_registry;
+
+    Container() = default;
+    Container(const Container&) = delete;
+    Container& operator=(const Container&) = delete;
 };
