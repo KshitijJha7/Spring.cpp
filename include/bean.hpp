@@ -1,7 +1,7 @@
 #pragma once
 #include <typeindex>
 #include <string>
-#include "core/container.hpp"
+#include <core/container.hpp>
 
 template <typename T>
 class Bean {

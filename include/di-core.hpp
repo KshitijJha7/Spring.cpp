@@ -1,8 +1,8 @@
 #pragma once
-#include "core/container.hpp"
-#include "bean.hpp"
-#include "injection/constructor_metadata.hpp"
-#include "injection/setter_metadata.hpp"
+#include <core/container.hpp>
+#include <bean.hpp>
+#include <injection/constructor_metadata.hpp>
+#include <injection/setter_metadata.hpp>
 
 #define BEAN                                            \
     inline static int _auto_register_T = []() -> int {\

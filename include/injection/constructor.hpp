@@ -1,7 +1,7 @@
 #pragma once
 #include <typeindex>
 #include <vector>
-#include "core/di_key.hpp"
+#include <core/di_key.hpp>
 
 class Constructor {
 public:

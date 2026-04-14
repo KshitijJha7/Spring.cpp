@@ -1,7 +1,7 @@
 #pragma once
 #include <typeindex>
 #include <typeinfo>
-#include "core/di_key.hpp"
+#include <core/di_key.hpp>
 
 class Setter {
 
