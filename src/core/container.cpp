@@ -1,5 +1,5 @@
 #include "core/container.hpp"
-
+#include "dependency-resolver/di_graph.hpp"
 Container& Container::getInstance() {
     static Container instance;
     return instance;
@@ -60,4 +60,18 @@ bool Container::checkIfExists(std::type_index type, std::string qualifier) {
         return type_registry.find(defaultKey) != type_registry.end();
     }
     return false;
+}
+
+void Container::initialize() {
+    DIGraph graph(type_registry);
+    auto topoOrder = graph.resolveDependencies();
+    for (const auto& key : topoOrder) {
+        Injectable* injectable = type_registry[key];
+        Constructor* ctor = injectable->getCtor();
+        if (ctor) {
+            injectable->instance = ctor->create();
+        } else {
+            throw std::runtime_error("No constructor found for type: " + std::string(key.type.name()) + " qualifier: " + key.qualifier);
+        }
+    }
 }

@@ -14,10 +14,9 @@ public:
     void addSetter(std::type_index type, Setter* setter, std::string qualifier = "");
     Injectable* getInjectable(std::type_index type, std::string qualifier = "");
     bool checkIfExists(std::type_index type, std::string qualifier = "");
-
+    void initialize();
 private:
     std::unordered_map<DIKey, Injectable*, DIKeyHash> type_registry;
-
     Container() = default;
     Container(const Container&) = delete;
     Container& operator=(const Container&) = delete;

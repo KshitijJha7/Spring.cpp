@@ -53,7 +53,7 @@ std::vector<DIKey> DIGraph::findCycle() {
     return cycle;
 }
 
-std::vector<DIKey> DIGraph::topologicalSort() {
+std::vector<DIKey> DIGraph::resolveDependencies() {
     std::vector<DIKey> topoList;
     std::queue<DIKey> q;
     for (const auto& [di_key, _] : graph) {
