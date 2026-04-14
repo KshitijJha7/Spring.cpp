@@ -1,6 +1,6 @@
 #pragma once
 #include "constructor.hpp"
-#include "container.hpp"
+#include "../core/container.hpp"
 #include <utility>
 
 template<typename T, typename... Args>
@@ -28,7 +28,7 @@ private:
         auto* injectable = container.getInjectable(typeid(Arg), qualifier);
         if (!injectable || !injectable->instance) {
             throw std::runtime_error(
-                std::string("Unsatisfied dependency: ") + typeid(Arg).name()
+                std::string("Unsatisfied dependency: ") + typeid(Arg).name() + " with qualifier: " + qualifier
             );
         }
         return *static_cast<Arg*>(injectable->instance);
