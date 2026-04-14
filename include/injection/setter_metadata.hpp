@@ -2,7 +2,6 @@
 #include "setter.hpp"
 #include <typeinfo>
 
-
 template<typename T, typename Arg>
 class SetterMetadata final : public Setter {
 public:

@@ -4,10 +4,14 @@ project(SpringCPP)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Header-only library
-add_library(spring_cpp INTERFACE)
+# Library
+add_library(spring_cpp STATIC
+    src/core/container.cpp
+    src/core/injectable.cpp
+    src/dependency-resolver/di_graph.cpp
+)
 
-target_include_directories(spring_cpp INTERFACE
+target_include_directories(spring_cpp PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
