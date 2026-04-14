@@ -27,8 +27,8 @@ int main(){
     Container::getInstance().getInjectable(typeid(std::string), "name_qualifier")->instance = &val_str;
     
     Container::getInstance().initialize();
-    
-    Test* t1 = static_cast<Test*>(Container::getInstance().getInjectable(typeid(Test))->instance);
-    std::cout << "a: " << t1->a << "\n";       
-    std::cout << "name: " << t1->name << "\n"; 
+
+    Test &t1 = *static_cast<Test*>(Container::getInstance().getInjectable(typeid(Test))->instance);
+    std::cout << "a: " << t1.a << "\n";       
+    std::cout << "name: " << t1.name << "\n"; 
 }
