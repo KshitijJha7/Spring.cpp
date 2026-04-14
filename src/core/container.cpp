@@ -68,7 +68,9 @@ void Container::initialize() {
     for (const auto& key : topoOrder) {
         Injectable* injectable = type_registry[key];
         Constructor* ctor = injectable->getCtor();
-        if (ctor) {
+        if(type_registry[key]->instance != nullptr) {
+            continue; 
+        }else if (ctor) {
             injectable->instance = ctor->create();
         } else {
             throw std::runtime_error("No constructor found for type: " + std::string(key.type.name()) + " qualifier: " + key.qualifier);

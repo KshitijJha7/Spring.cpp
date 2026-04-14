@@ -25,15 +25,10 @@ int main(){
 
     Container::getInstance().addTypeInjectable(typeid(std::string), "name_qualifier");
     Container::getInstance().getInjectable(typeid(std::string), "name_qualifier")->instance = &val_str;
-
-    Constructor* ctor = Container::getInstance().getInjectable(typeid(Test))->getCtor();
-    Test* t1 = static_cast<Test*>(ctor->create());
-    std::cout << "a: " << t1->a << "\n";       // expected: 42
-    std::cout << "name: " << t1->name << "\n"; // expected: hello
-    int new_val = 99;
-    Container::getInstance().getInjectable(typeid(int), "a_qualifier")->instance = &new_val;
-    Setter* setr = Container::getInstance().getInjectable(typeid(Test))->getSettersList()[0];
-    DIKey key = setr->getDIKey();
-    setr->call(t1, Container::getInstance().getInjectable(key.type, key.qualifier)->instance);
-    std::cout << "a after setter: " << t1->a << "\n"; // expected: 99
+    
+    Container::getInstance().initialize();
+    
+    Test* t1 = static_cast<Test*>(Container::getInstance().getInjectable(typeid(Test))->instance);
+    std::cout << "a: " << t1->a << "\n";       
+    std::cout << "name: " << t1->name << "\n"; 
 }
