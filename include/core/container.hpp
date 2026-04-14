@@ -22,11 +22,11 @@ public:
         }
     }
 
-    void addConstructor(std::type_index type, Constructor* ctor, std::string qualifier = "") {
+    void setConstructor(std::type_index type, Constructor* ctor, std::string qualifier = "") {
         DIKey key{type, qualifier};
         auto it = type_registry.find(key);
         if (it != type_registry.end()) {
-            it->second->add_constructor_metadata(ctor);
+            it->second->set_constructor_metadata(ctor);
         } else {
             throw std::runtime_error("Injectable not found for type: " + std::string(type.name()) + " qualifier: " + qualifier);
         }

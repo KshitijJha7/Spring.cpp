@@ -29,14 +29,14 @@
 #define AUTOWIRED_CONSTRUCTOR(...)\
 inline static int _auto_register_ctor_##__COUNTER__ = []()->int{    \
     Constructor * ctor = new ConstructorMetadata<Bean::bean_type_name,__VA_ARGS__>();   \
-    Bean::addConstructor(ctor); \
+    Bean::setConstructor(ctor); \
     return 0;   \
 }()
 
 #define DEFAULT_CONSTRUCTOR \
 inline static int _auto_register_default_constructor = []()->int{\
     Constructor * ctor = new ConstructorMetadata<Bean::bean_type_name>();\
-    Bean::addConstructor(ctor);\
+    Bean::setConstructor(ctor);\
     return 0;\
 }()
 
@@ -45,7 +45,7 @@ inline static int _auto_register_default_constructor = []()->int{\
 #define AUTOWIRED_CONSTRUCTOR_QLFR(qualifiers,...)\
 inline static int _auto_register_ctor_##__COUNTER__ = []()->int{    \
     Constructor * ctor = new ConstructorMetadata<Bean::bean_type_name,__VA_ARGS__>(qualifiers);   \
-    Bean::addConstructor(ctor); \
+    Bean::setConstructor(ctor); \
     return 0;   \
 }()
 

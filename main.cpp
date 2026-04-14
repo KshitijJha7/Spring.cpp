@@ -26,7 +26,7 @@ int main(){
     Container::getInstance().addTypeInjectable(typeid(std::string), "name_qualifier");
     Container::getInstance().getInjectable(typeid(std::string), "name_qualifier")->instance = &val_str;
 
-    Constructor* ctor = Container::getInstance().getInjectable(typeid(Test))->getCtorList()[0];
+    Constructor* ctor = Container::getInstance().getInjectable(typeid(Test))->getCtor();
     Test* t1 = static_cast<Test*>(ctor->create());
     std::cout << "a: " << t1->a << "\n";       // expected: 42
     std::cout << "name: " << t1->name << "\n"; // expected: hello

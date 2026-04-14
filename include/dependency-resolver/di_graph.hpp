@@ -12,9 +12,8 @@ class DIGraph{
         std::vector<DIKey> sortedList;
     public:
         DIGraph(std::unordered_map<DIKey, Injectable*,DIKeyHash> &graph) : graph(graph) {
-            for (const auto& pair : graph) {
-                const DIKey& key = pair.first;  
-                adjacencyList[key] = std::vector<DIKey>();
+            for (const auto& [di_key, injectable] : graph) {
+                
             }
         } 
 

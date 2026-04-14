@@ -12,8 +12,13 @@ protected:
         Container::getInstance().addTypeInjectable(typeid(T), qualifier);
     }
 
-    static void addConstructor(Constructor* ctor, const std::string& qualifier = "") {
-        Container::getInstance().addConstructor(typeid(T), ctor, qualifier);
+    static void setConstructor(Constructor* ctor, const std::string& qualifier = "") {
+        if(Container::getInstance().getInjectable(typeid(T), qualifier)->getCtor() == nullptr) {
+            Container::getInstance().setConstructor(typeid(T), ctor, qualifier);
+        }else{
+            throw std::runtime_error("Constructor already exists for type: " + std::string(typeid(T).name()) + " qualifier: " + qualifier);
+        }
+        
     }
 
     static void addSetter(Setter* setter, const std::string& qualifier = "") {

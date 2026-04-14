@@ -7,23 +7,23 @@
 
 class Injectable{
     private:
-        std::vector<Constructor*> constructor_metadata;
+        Constructor* constructor_metadata;
         std::vector<Setter*> setter_metadata;
     
     public:
         void* instance = nullptr;
 
     Injectable(){
-        constructor_metadata = std::vector<Constructor*>();
+        constructor_metadata = nullptr;
         setter_metadata = std::vector<Setter*>();
     }
-    void add_constructor_metadata(Constructor* ctor_mdata){
-        this->constructor_metadata.push_back(ctor_mdata);
+    void set_constructor_metadata(Constructor* ctor_mdata){
+        this->constructor_metadata = ctor_mdata;
     }
     void add_setter_metadata(Setter* setter_mdata){
         this->setter_metadata.push_back(setter_mdata);
     }
-    std::vector<Constructor*> getCtorList(){
+    Constructor* getCtor(){
         return constructor_metadata;
     }
     std::vector<Setter*> getSettersList(){
