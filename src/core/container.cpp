@@ -62,6 +62,30 @@ bool Container::checkIfExists(std::type_index type, std::string qualifier) {
     return false;
 }
 
+void Container::applySetters() {
+    for (const auto& [key, injectable] : type_registry) {
+        for (Setter* setter : injectable->getSettersList()) {
+            DIKey depKey = setter->getDIKey();
+            auto it = type_registry.find(depKey);
+            if (it == type_registry.end()) {
+                throw std::runtime_error(
+                    "Setter dependency not registered: " + std::string(depKey.type.name()) +
+                    (depKey.qualifier.empty() ? "" : " qualifier: " + depKey.qualifier) +
+                    " required by: " + std::string(key.type.name())
+                );
+            }
+            if (it->second->instance == nullptr) {
+                throw std::runtime_error(
+                    "Setter dependency registered but not instantiated: " + std::string(depKey.type.name()) +
+                    (depKey.qualifier.empty() ? "" : " qualifier: " + depKey.qualifier) +
+                    " required by: " + std::string(key.type.name())
+                );
+            }
+            setter->call(injectable->instance, it->second->instance);
+        }
+    }
+}
+
 void Container::initialize() {
     DIGraph graph(type_registry);
     auto topoOrder = graph.resolveDependencies();
@@ -76,4 +100,5 @@ void Container::initialize() {
             throw std::runtime_error("No constructor found for type: " + std::string(key.type.name()) + " qualifier: " + key.qualifier);
         }
     }
+    applySetters();
 }

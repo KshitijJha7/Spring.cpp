@@ -1,7 +1,7 @@
 #pragma once
 #include <core/injectable.hpp>
 #include <typeindex>
-#include <unordered_map>
+#include <unordered_map> 
 #include <string>
 #include <stdexcept>
 #include <core/di_key.hpp>
@@ -17,6 +17,7 @@ public:
     void initialize();
 private:
     std::unordered_map<DIKey, Injectable*, DIKeyHash> type_registry;
+    void applySetters();
     Container() = default;
     Container(const Container&) = delete;
     Container& operator=(const Container&) = delete;

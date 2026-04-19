@@ -4,14 +4,6 @@
 #include <stdexcept>
 
 DIGraph::DIGraph(std::unordered_map<DIKey, Injectable*, DIKeyHash>& graph) : graph(graph) {
-    for (const auto& [di_key, injectable] : graph) {
-        if(injectable->getCtor() != nullptr) {
-            for (const auto& dep : injectable->getCtor()->getDependencyKeys()) {
-                adjacencyList[dep].push_back(di_key);
-                indegree[di_key]++;
-            }
-        }
-    }
 }
 
 bool DIGraph::dfsVisit(const DIKey& node, std::unordered_map<DIKey, int, DIKeyHash>& state, std::unordered_map<DIKey, DIKey, DIKeyHash>& parent, std::vector<DIKey>& cycle) {
@@ -56,6 +48,20 @@ std::vector<DIKey> DIGraph::findCycle() {
 std::vector<DIKey> DIGraph::resolveDependencies() {
     std::vector<DIKey> topoList;
     std::queue<DIKey> q;
+    std::unordered_map<DIKey, int,DIKeyHash> indegree;
+    for (const auto& [di_key, injectable] : graph) {
+        if(injectable->getCtor() != nullptr) {
+            for (const auto& dep : injectable->getCtor()->getDependencyKeys()) {
+                if(graph.find(dep) == graph.end()) {
+                    std::string depStr = dep.type.name() + (dep.qualifier.empty() ? "" : ":" + dep.qualifier);
+                    throw std::runtime_error("Dependency " + depStr + " not found for type: " + di_key.type.name() + " qualifier: " + di_key.qualifier);
+                }
+                adjacencyList[dep].push_back(di_key);
+                indegree[di_key]++;
+            }
+        }
+    }
+
     for (const auto& [di_key, _] : graph) {
         if (indegree[di_key] == 0) {
             q.push(di_key);
@@ -81,7 +87,9 @@ std::vector<DIKey> DIGraph::resolveDependencies() {
         for (const auto& key : cycle) {
             cycleStr += key.type.name() + (key.qualifier.empty() ? "" : ":" + key.qualifier) + " -> ";
         }
-        cycleStr = cycleStr.substr(0, cycleStr.size() - 4);
+        if(!cycleStr.empty()){
+            cycleStr = cycleStr.substr(0, cycleStr.size() - 4);
+        }
         throw std::runtime_error("Cycle detected in dependency graph: " + cycleStr);
     }
 
