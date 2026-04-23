@@ -1,0 +1,8 @@
+server:
+  host: "localhost"
+  port: 8080
+
+app:
+  name: "SpringCPP"
+  timeout: 30
+  ratio: 0.75

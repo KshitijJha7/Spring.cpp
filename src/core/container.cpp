@@ -1,5 +1,7 @@
 #include <core/container.hpp>
 #include <dependency-resolver/di_graph.hpp>
+#include <config/yaml_config.hpp>
+
 Container& Container::getInstance() {
     static Container instance;
     return instance;
@@ -87,6 +89,7 @@ void Container::applySetters() {
 }
 
 void Container::initialize() {
+    YamlConfig::load("resources/config.yaml");
     DIGraph graph(type_registry);
     auto topoOrder = graph.resolveDependencies();
     for (const auto& key : topoOrder) {
